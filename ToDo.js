@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  TextInput
 } from "react-native";
 
 const { height, width } = Dimensions.get("window");
@@ -12,10 +13,12 @@ const { height, width } = Dimensions.get("window");
 export default class ToDo extends React.Component {
   state = {
     isEditing: false,
-    isCompleted: false
+    isCompleted: false,
+    toDoValue: ""
   };
   render() {
-    const { isCompleted, isEditing } = this.state;
+    const { isCompleted, isEditing, toDoValue } = this.state;
+    const { text } = this.props;
     return (
       <View style={styles.container}>
         <View style={styles.column}>
@@ -27,14 +30,28 @@ export default class ToDo extends React.Component {
               ]}
             />
           </TouchableOpacity>
-          <Text
-            style={[
-              styles.text,
-              isCompleted ? styles.completedText : styles.uncompletedText
-            ]}
-          >
-            Hello, To Do List
-          </Text>
+          {isEditing ? (
+            <TextInput
+              style={[
+                styles.input,
+                styles.text,
+                isCompleted ? styles.completedText : styles.uncompletedText
+              ]}
+              value={toDoValue}
+              onChangeText={this._controlInput}
+              onBlur={this._finishEditing}
+              blurOnSubmit={true}
+            />
+          ) : (
+            <Text
+              style={[
+                styles.text,
+                isCompleted ? styles.completedText : styles.uncompletedText
+              ]}
+            >
+              {text}
+            </Text>
+          )}
         </View>
         {isEditing ? (
           <View style={styles.actions}>
@@ -69,14 +86,19 @@ export default class ToDo extends React.Component {
     });
   };
   _startEditing = () => {
+    const { text } = this.props;
     this.setState({
-      isEditing: true
+      isEditing: true,
+      toDoValue: text
     });
   };
   _finishEditing = () => {
     this.setState({
       isEditing: false
     });
+  };
+  _controlInput = text => {
+    this.setState({ toDoValue: text });
   };
 }
 
@@ -126,5 +148,9 @@ const styles = StyleSheet.create({
   actionContainer: {
     marginVertical: 10,
     marginHorizontal: 10
+  },
+  input: {
+    marginVertical: 10,
+    width: width / 2
   }
 });
